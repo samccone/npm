@@ -98,6 +98,7 @@
     "umask": "~1.1.0",
     "unique-filename": "~1.1.0",
     "unpipe": "~1.0.0",
+    "v8-profiler": "~5.3.2",
     "validate-npm-package-name": "~2.2.2",
     "which": "~1.2.4",
     "wrappy": "~1.0.1",

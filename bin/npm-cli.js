@@ -26,11 +26,13 @@
   var npm = require('../lib/npm.js')
   var npmconf = require('../lib/config/core.js')
   var errorHandler = require('../lib/utils/error-handler.js')
-
+  var profiler = require('v8-profiler')
   var configDefs = npmconf.defs
   var shorthands = configDefs.shorthands
   var types = configDefs.types
   var nopt = require('nopt')
+  var fs = require('fs')
+  profiler.startProfiling('', true)
 
   // if npm is called as "npmg" or "npm_g", then
   // run in global mode.
@@ -71,6 +73,13 @@
   conf._exit = true
   npm.load(conf, function (er) {
     if (er) return errorHandler(er)
-    npm.commands[npm.command](npm.argv, errorHandler)
+    npm.commands[npm.command](npm.argv, function() {
+      var self = this;
+      var profile = profiler.stopProfiling('');
+      profile.export(function(err, res) {
+          fs.writeFileSync(path.join(process.cwd(), 'tmp.cpuprofile'), res);
+          errorHandler.apply(self, arguments);
+     });
+    })
   })
 })()
